@@ -585,92 +585,94 @@ const RouletteTracker = () => {
           </div>
         </div>
 
-        {/* Street Information Section */}
-        <div className="w-full p-4 border-b border-gray-200 bg-green-50">
-          <div className="mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold mb-2">
-              Street Information
-            </h2>
-            <p className="text-sm text-gray-600 mb-4">
-              Total Spins: <span className="font-bold">{totalSpins}</span> |
-              Last 5:{" "}
-              <span className="font-bold">
-                {history.slice(-5).join(", ") || "None"}
-              </span>
-            </p>
+        {/* Street Information Section - Only for Admins */}
+        {currentUser.role === ROLES.ADMIN && (
+          <div className="w-full p-4 border-b border-gray-200 bg-green-50">
+            <div className="mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                Street Information
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Total Spins: <span className="font-bold">{totalSpins}</span> |
+                Last 5:{" "}
+                <span className="font-bold">
+                  {history.slice(-5).join(", ") || "None"}
+                </span>
+              </p>
 
-            {/* Street betting guide */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-              {STREETS.map((street, index) => (
-                <div
-                  key={index}
-                  className={`p-2 rounded border ${
-                    streetAnalysis.streetsNotInLast12.some(
-                      (s) => s.streetNumber === index + 1
-                    )
-                      ? "bg-green-100 border-green-300"
-                      : streetAnalysis.streetsMultipleInLast12.some(
-                          (s) => s.streetNumber === index + 1
-                        )
-                      ? "bg-red-100 border-red-300"
-                      : streetAnalysis.streetsNotInLast10.some(
-                          (s) => s.streetNumber === index + 1
-                        )
-                      ? "bg-yellow-100 border-yellow-300"
-                      : "bg-gray-100 border-gray-300"
-                  }`}
-                >
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold">Street {index + 1}</span>
-                    <span className="text-sm">{street.join("-")}</span>
-                  </div>
-                  <div className="text-xs mt-1">
-                    {streetAnalysis.streetsNotInLast12.some(
-                      (s) => s.streetNumber === index + 1
-                    )
-                      ? "⭐ Missing in last 12 spins"
-                      : streetAnalysis.streetsMultipleInLast12.some(
-                          (s) => s.streetNumber === index + 1
-                        )
-                      ? "⚠️ Multiple in last 12 spins"
-                      : streetAnalysis.streetsNotInLast10.some(
-                          (s) => s.streetNumber === index + 1
-                        )
-                      ? "🔍 Missing in last 10 spins"
-                      : "Recently appeared"}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Last 12 Spins */}
-          <div className="mb-6">
-            <h3 className="font-semibold mb-2">Last 12 Spins (Newest First)</h3>
-            <div className="flex flex-wrap gap-1 sm:gap-2">
-              {history
-                .slice(-12)
-                .reverse()
-                .map((num, index) => {
-                  const color = stats[num].color;
-                  return (
-                    <div
-                      key={index}
-                      className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${
-                        color === "red"
-                          ? "bg-red-600"
-                          : color === "black"
-                          ? "bg-black"
-                          : "bg-green-600"
-                      } text-white text-xs font-bold`}
-                    >
-                      {num}
+              {/* Street betting guide */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                {STREETS.map((street, index) => (
+                  <div
+                    key={index}
+                    className={`p-2 rounded border ${
+                      streetAnalysis.streetsNotInLast12.some(
+                        (s) => s.streetNumber === index + 1
+                      )
+                        ? "bg-green-100 border-green-300"
+                        : streetAnalysis.streetsMultipleInLast12.some(
+                            (s) => s.streetNumber === index + 1
+                          )
+                        ? "bg-red-100 border-red-300"
+                        : streetAnalysis.streetsNotInLast10.some(
+                            (s) => s.streetNumber === index + 1
+                          )
+                        ? "bg-yellow-100 border-yellow-300"
+                        : "bg-gray-100 border-gray-300"
+                    }`}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span className="font-semibold">Street {index + 1}</span>
+                      <span className="text-sm">{street.join("-")}</span>
                     </div>
-                  );
-                })}
+                    <div className="text-xs mt-1">
+                      {streetAnalysis.streetsNotInLast12.some(
+                        (s) => s.streetNumber === index + 1
+                      )
+                        ? "⭐ Missing in last 12 spins"
+                        : streetAnalysis.streetsMultipleInLast12.some(
+                            (s) => s.streetNumber === index + 1
+                          )
+                        ? "⚠️ Multiple in last 12 spins"
+                        : streetAnalysis.streetsNotInLast10.some(
+                            (s) => s.streetNumber === index + 1
+                          )
+                        ? "🔍 Missing in last 10 spins"
+                        : "Recently appeared"}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Last 12 Spins */}
+            <div className="mb-6">
+              <h3 className="font-semibold mb-2">Last 12 Spins (Newest First)</h3>
+              <div className="flex flex-wrap gap-1 sm:gap-2">
+                {history
+                  .slice(-12)
+                  .reverse()
+                  .map((num, index) => {
+                    const color = stats[num].color;
+                    return (
+                      <div
+                        key={index}
+                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${
+                          color === "red"
+                            ? "bg-red-600"
+                            : color === "black"
+                            ? "bg-black"
+                            : "bg-green-600"
+                        } text-white text-xs font-bold`}
+                      >
+                        {num}
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         {/* Analysis & Recommendations */}
         <div className="flex flex-col md:flex-row p-4">
