@@ -39,7 +39,7 @@ type StreetAnalysis = {
   allStreetStats: Street[];
 };
 
-// Define all streets in European roulette (same as American but without 00)
+// Define all streets in European roulette
 const STREETS = [
   [1, 2, 3],
   [4, 5, 6],
@@ -255,9 +255,7 @@ const RouletteTracker = () => {
       suggestion += streetAnalysis.streetsMultipleInLast12
         .map(
           (s) =>
-            `Street ${s.streetNumber} (${s.numbers.join("-")}) - ${
-              s.appearancesInLast12
-            } times`
+            `Street ${s.streetNumber} (${s.numbers.join("-")}) - ${s.appearancesInLast12} times`
         )
         .join(", ");
       suggestion += ". ";
@@ -350,7 +348,7 @@ const RouletteTracker = () => {
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
 
-    interface LoginFormEvent extends React.FormEvent<HTMLFormElement> {}
+    interface LoginFormEvent extends React.FormEvent<HTMLFormElement> { }
 
     const handleSubmit = (e: LoginFormEvent): void => {
       e.preventDefault();
@@ -470,105 +468,99 @@ const RouletteTracker = () => {
 
           {/* Visual representation of the roulette table */}
           <div className="mb-6 overflow-x-auto">
-            <div className="min-w-max border-4 border-green-800 rounded-lg p-3 bg-green-700">
+            <div className="w-full border-4 border-green-800 rounded-lg p-3 bg-green-700">
               {/* Main grid of numbers with 0 on the left */}
-              <div className="flex">
+              <div className="flex ml-5">
                 {/* Zero column */}
                 <div className="mr-1">
-                  <button
-                    onClick={() => addSpin("0")}
-                    className="w-12 h-36 flex items-center justify-center bg-green-600 text-white font-bold rounded-sm hover:bg-green-700 transition border border-white"
-                  >
+                  <button className="w-12 h-36 flex items-center justify-center bg-green-600 text-white font-bold rounded-sm hover:bg-green-700 transition border border-white">
                     0
                   </button>
                 </div>
-
                 {/* Main grid 1-36 */}
-                <div className="grid grid-cols-12 gap-1">
+                <div className="grid grid-cols-12 gap-1 flex-1">
                   {/* Third row: 3, 6, 9, 12, ... (top row in display) */}
-                  {[3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => addSpin(num.toString())}
-                      className={`w-12 h-12 flex items-center justify-center ${
-                        RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
-                      } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
-                    >
-                      {num}
-                    </button>
-                  ))}
-
+                  {[3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36].map(
+                    (num) => (
+                      <button
+                        key={num}
+                        onClick={() => addSpin(num.toString())}
+                        className={`w-12 h-12 flex items-center justify-center ${RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
+                          } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
+                      >
+                        {num}
+                      </button>
+                    )
+                  )}
                   {/* Second row: 2, 5, 8, 11, ... (middle row in display) */}
-                  {[2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => addSpin(num.toString())}
-                      className={`w-12 h-12 flex items-center justify-center ${
-                        RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
-                      } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
-                    >
-                      {num}
-                    </button>
-                  ))}
-
+                  {[2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35].map(
+                    (num) => (
+                      <button
+                        key={num}
+                        onClick={() => addSpin(num.toString())}
+                        className={`w-12 h-12 flex items-center justify-center ${RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
+                          } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
+                      >
+                        {num}
+                      </button>
+                    )
+                  )}
                   {/* First row: 1, 4, 7, 10, ... (bottom row in display) */}
-                  {[1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34].map((num) => (
-                    <button
-                      key={num}
-                      onClick={() => addSpin(num.toString())}
-                      className={`w-12 h-12 flex items-center justify-center ${
-                        RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
-                      } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
-                    >
-                      {num}
-                    </button>
-                  ))}
+                  {[1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34].map(
+                    (num) => (
+                      <button
+                        key={num}
+                        onClick={() => addSpin(num.toString())}
+                        className={`w-12 h-12 flex items-center justify-center ${RED_NUMBERS.includes(num) ? "bg-red-600" : "bg-black"
+                          } text-white font-bold rounded-sm hover:opacity-80 transition border border-white`}
+                      >
+                        {num}
+                      </button>
+                    )
+                  )}
                 </div>
               </div>
-
               {/* Dozens and other betting options */}
-              <div className="grid grid-cols-3 gap-1 mt-2">
-                <div className="flex">
-                  <div className="w-12 mr-1"></div>{" "}
-                  {/* Empty space to align with 0 */}
-                  <div className="flex-1 bg-green-600 text-white text-center p-2 rounded border border-white">
+              <div className="flex mt-2">
+                <div className="w-12 mr-1"></div> {/* Empty space to align with 0 */}
+                <div className="grid grid-cols-12 gap-1 flex-1">
+                  <div className="col-span-4 bg-green-600 text-white text-center p-2 rounded border border-white">
                     <span className="font-bold">1st Dozen</span>
                     <div className="text-xs">(1-12)</div>
                   </div>
-                </div>
-                <div className="bg-green-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">2nd Dozen</span>
-                  <div className="text-xs">(13-24)</div>
-                </div>
-                <div className="bg-green-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">3rd Dozen</span>
-                  <div className="text-xs">(25-36)</div>
+                  <div className="col-span-4 bg-green-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">2nd Dozen</span>
+                    <div className="text-xs">(13-24)</div>
+                  </div>
+                  <div className="col-span-4 bg-green-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">3rd Dozen</span>
+                    <div className="text-xs">(25-36)</div>
+                  </div>
                 </div>
               </div>
 
               {/* Additional betting options */}
-              <div className="grid grid-cols-6 gap-1 mt-2">
-                <div className="flex">
-                  <div className="w-12 mr-1"></div>{" "}
-                  {/* Empty space to align with 0 */}
-                  <div className="flex-1 bg-green-600 text-white text-center p-2 rounded border border-white">
+              <div className="flex mt-2">
+                <div className="w-12 mr-1"></div> {/* Empty space to align with 0 */}
+                <div className="grid grid-cols-12 gap-1 flex-1">
+                  <div className="col-span-2 bg-green-600 text-white text-center p-2 rounded border border-white">
                     <span className="font-bold">1 to 18</span>
                   </div>
-                </div>
-                <div className="bg-green-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">EVEN</span>
-                </div>
-                <div className="bg-red-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">RED</span>
-                </div>
-                <div className="bg-black text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">BLACK</span>
-                </div>
-                <div className="bg-green-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">ODD</span>
-                </div>
-                <div className="bg-green-600 text-white text-center p-2 rounded border border-white">
-                  <span className="font-bold">19 to 36</span>
+                  <div className="col-span-2 bg-green-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">EVEN</span>
+                  </div>
+                  <div className="col-span-2 bg-red-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">RED</span>
+                  </div>
+                  <div className="col-span-2 bg-black text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">BLACK</span>
+                  </div>
+                  <div className="col-span-2 bg-green-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">ODD</span>
+                  </div>
+                  <div className="col-span-2 bg-green-600 text-white text-center p-2 rounded border border-white">
+                    <span className="font-bold">19 to 36</span>
+                  </div>
                 </div>
               </div>
 
@@ -605,21 +597,20 @@ const RouletteTracker = () => {
                 {STREETS.map((street, index) => (
                   <div
                     key={index}
-                    className={`p-2 rounded border ${
-                      streetAnalysis.streetsNotInLast12.some(
+                    className={`p-2 rounded border ${streetAnalysis.streetsNotInLast12.some(
+                      (s) => s.streetNumber === index + 1
+                    )
+                      ? "bg-green-100 border-green-300"
+                      : streetAnalysis.streetsMultipleInLast12.some(
                         (s) => s.streetNumber === index + 1
                       )
-                        ? "bg-green-100 border-green-300"
-                        : streetAnalysis.streetsMultipleInLast12.some(
-                            (s) => s.streetNumber === index + 1
-                          )
                         ? "bg-red-100 border-red-300"
                         : streetAnalysis.streetsNotInLast10.some(
-                            (s) => s.streetNumber === index + 1
-                          )
-                        ? "bg-yellow-100 border-yellow-300"
-                        : "bg-gray-100 border-gray-300"
-                    }`}
+                          (s) => s.streetNumber === index + 1
+                        )
+                          ? "bg-yellow-100 border-yellow-300"
+                          : "bg-gray-100 border-gray-300"
+                      }`}
                   >
                     <div className="flex justify-between items-center">
                       <span className="font-semibold">Street {index + 1}</span>
@@ -631,14 +622,14 @@ const RouletteTracker = () => {
                       )
                         ? "⭐ Missing in last 12 spins"
                         : streetAnalysis.streetsMultipleInLast12.some(
+                          (s) => s.streetNumber === index + 1
+                        )
+                          ? "⚠️ Multiple in last 12 spins"
+                          : streetAnalysis.streetsNotInLast10.some(
                             (s) => s.streetNumber === index + 1
                           )
-                        ? "⚠️ Multiple in last 12 spins"
-                        : streetAnalysis.streetsNotInLast10.some(
-                            (s) => s.streetNumber === index + 1
-                          )
-                        ? "🔍 Missing in last 10 spins"
-                        : "Recently appeared"}
+                            ? "🔍 Missing in last 10 spins"
+                            : "Recently appeared"}
                     </div>
                   </div>
                 ))}
@@ -657,13 +648,12 @@ const RouletteTracker = () => {
                     return (
                       <div
                         key={index}
-                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${
-                          color === "red"
-                            ? "bg-red-600"
-                            : color === "black"
+                        className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${color === "red"
+                          ? "bg-red-600"
+                          : color === "black"
                             ? "bg-black"
                             : "bg-green-600"
-                        } text-white text-xs font-bold`}
+                          } text-white text-xs font-bold`}
                       >
                         {num}
                       </div>
@@ -691,9 +681,7 @@ const RouletteTracker = () => {
                   User Decision Summary:
                 </h3>
                 <div className="bg-white p-2 rounded border border-gray-200 mb-2">
-                  <p className="font-bold">
-                    {getSimplifiedDecision().decision}
-                  </p>
+                  <p className="font-bold">{getSimplifiedDecision().decision}</p>
                   <p className="text-xs text-gray-600">
                     Confidence: {getSimplifiedDecision().confidence}
                     <br />
@@ -818,8 +806,8 @@ const RouletteTracker = () => {
                               entry.color === "red"
                                 ? "#dc2626"
                                 : entry.color === "black"
-                                ? "#1f2937"
-                                : "#16a34a"
+                                  ? "#1f2937"
+                                  : "#16a34a"
                             }
                           />
                         ))}
@@ -841,23 +829,23 @@ const RouletteTracker = () => {
                       <div className="font-bold mt-1">
                         {streetAnalysis.streetsNotInLast12.length > 0
                           ? streetAnalysis.streetsNotInLast12
-                              .slice(0, 3)
-                              .map((s) => s.streetNumber)
-                              .join(", ")
+                            .slice(0, 3)
+                            .map((s) => s.streetNumber)
+                            .join(", ")
                           : "None"}
                       </div>
                     </div>
-                    <div className="bg-yellow-100 p-2 rounded border border-yellow-200 text-center">
+                    <div className="bg-yellow-100 p-2 rounded border border-green-200 text-center">
                       <div className="text-xs font-medium">
                         Consider Betting
                       </div>
                       <div className="font-bold mt-1">
                         {streetAnalysis.streetsNotInLast10.length > 0 &&
-                        streetAnalysis.streetsNotInLast12.length === 0
+                          streetAnalysis.streetsNotInLast12.length === 0
                           ? streetAnalysis.streetsNotInLast10
-                              .slice(0, 3)
-                              .map((s) => s.streetNumber)
-                              .join(", ")
+                            .slice(0, 3)
+                            .map((s) => s.streetNumber)
+                            .join(", ")
                           : "None"}
                       </div>
                     </div>
@@ -866,9 +854,9 @@ const RouletteTracker = () => {
                       <div className="font-bold mt-1">
                         {streetAnalysis.streetsMultipleInLast12.length > 0
                           ? streetAnalysis.streetsMultipleInLast12
-                              .slice(0, 3)
-                              .map((s) => s.streetNumber)
-                              .join(", ")
+                            .slice(0, 3)
+                            .map((s) => s.streetNumber)
+                            .join(", ")
                           : "None"}
                       </div>
                     </div>
