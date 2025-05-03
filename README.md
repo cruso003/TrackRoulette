@@ -1,2 +1,2 @@
 # TrackRoulette
-Prediction System on American Roulette
+Prediction System on European Roulette
