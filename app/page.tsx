@@ -36,6 +36,7 @@ type StreetAnalysis = {
   streetsNotInLast10: Street[];
   streetsNotInLast12: Street[];
   streetsMultipleInLast12: Street[];
+  streetsSingleInLast12: Street[];
   allStreetStats: Street[];
 };
 
@@ -86,6 +87,7 @@ const analyzeStreets = (history: string[]): StreetAnalysis => {
     streetsNotInLast10: streetStats.filter((s) => !s.appearedInLast10),
     streetsNotInLast12: streetStats.filter((s) => s.appearancesInLast12 === 0),
     streetsMultipleInLast12: streetStats.filter((s) => s.multipleAppearances),
+    streetsSingleInLast12: streetStats.filter((s) => s.appearancesInLast12 === 1),
     allStreetStats: streetStats,
   };
 };
@@ -116,6 +118,7 @@ const RouletteTracker = () => {
     streetsNotInLast10: [],
     streetsNotInLast12: [],
     streetsMultipleInLast12: [],
+    streetsSingleInLast12: [],
     allStreetStats: [],
   });
 
@@ -153,6 +156,7 @@ const RouletteTracker = () => {
       streetsNotInLast10: [],
       streetsNotInLast12: [],
       streetsMultipleInLast12: [],
+      streetsSingleInLast12: [],
       allStreetStats: [],
     });
   };
@@ -195,73 +199,45 @@ const RouletteTracker = () => {
     };
   };
 
-  const getStreetSuggestion = () => {
+  const getStrategyDetails = (strategy: number) => {
     if (totalSpins < 12) {
-      return "Need more spins for reliable street predictions (at least 12)";
-    }
-
-    let suggestion = "";
-    if (streetAnalysis.streetsNotInLast12.length > 0) {
-      suggestion +=
-        "Consider betting on these streets that haven't appeared in the last 12 spins: ";
-      suggestion += streetAnalysis.streetsNotInLast12
-        .map((s) => `Street ${s.streetNumber} (${s.numbers.join("-")})`)
-        .join(", ");
-      suggestion += ". ";
-    }
-
-    if (streetAnalysis.streetsMultipleInLast12.length > 0) {
-      suggestion +=
-        "These streets have appeared multiple times in the last 12 spins and might be less likely to appear soon: ";
-      suggestion += streetAnalysis.streetsMultipleInLast12
-        .map(
-          (s) =>
-            `Street ${s.streetNumber} (${s.numbers.join("-")}) - ${s.appearancesInLast12} times`
-        )
-        .join(", ");
-      suggestion += ". ";
-    }
-
-    if (!suggestion) {
-      suggestion =
-        "No strong street patterns detected. Consider betting on streets that haven't appeared in the last 10 spins.";
-    }
-
-    return suggestion;
-  };
-
-  const getSimplifiedDecision = () => {
-    if (totalSpins < 12) {
-      return { decision: "Waiting for more data...", confidence: "Low" };
-    }
-
-    if (streetAnalysis.streetsNotInLast12.length > 0) {
-      const recommendedStreets = streetAnalysis.streetsNotInLast12.slice(0, 3);
       return {
-        decision: `Bet on streets: ${recommendedStreets
-          .map((s) => s.streetNumber)
-          .join(", ")}`,
+        name: `Strategy ${strategy}`,
+        streets: [],
+        numbers: [],
+        description: "Need at least 12 spins for reliable predictions",
+        confidence: "Low",
+      };
+    }
+
+    if (strategy === 1) {
+      const streets = streetAnalysis.streetsNotInLast12.slice(0, 3);
+      return {
+        name: "Strategy 1",
+        streets: streets.map((s) => s.streetNumber),
+        numbers: streets.flatMap((s) => s.numbers),
+        description: "Bet on streets that haven't appeared in the last 12 spins",
         confidence: "Medium",
-        reason: "These streets haven't appeared in the last 12 spins",
       };
-    }
-
-    if (streetAnalysis.streetsNotInLast10.length > 0) {
-      const recommendedStreets = streetAnalysis.streetsNotInLast10.slice(0, 2);
+    } else if (strategy === 2) {
+      const streets = streetAnalysis.streetsNotInLast10.slice(0, 3);
       return {
-        decision: `Bet on streets: ${recommendedStreets
-          .map((s) => s.streetNumber)
-          .join(", ")}`,
+        name: "Strategy 2",
+        streets: streets.map((s) => s.streetNumber),
+        numbers: streets.flatMap((s) => s.numbers),
+        description: "Bet on streets that haven't appeared in the last 10 spins",
         confidence: "Low to Medium",
-        reason: "These streets haven't appeared in the last 10 spins",
+      };
+    } else {
+      const streets = streetAnalysis.streetsSingleInLast12.slice(0, 3);
+      return {
+        name: "Strategy 3",
+        streets: streets.map((s) => s.streetNumber),
+        numbers: streets.flatMap((s) => s.numbers),
+        description: "Bet on streets that appeared exactly once in the last 12 spins",
+        confidence: "Low",
       };
     }
-
-    return {
-      decision: "No strong street recommendation",
-      confidence: "Low",
-      reason: "All streets have appeared recently",
-    };
   };
 
   const prepareChartData = () => {
@@ -408,7 +384,8 @@ const RouletteTracker = () => {
             European Roulette Table
           </h2>
           <div className="w-full max-w-full">
-            <div className="w-full border-4 border-green-800 rounded-lg p-3 bg-green-700 relative">
+            <div className="w-full border-4 border-green-800 rounded-lg p-3 bg-green-7
+            00 relative">
               {/* Mobile layout: Vertical table */}
               <div className="sm:hidden w-full">
                 {/* Zero button */}
@@ -579,7 +556,7 @@ const RouletteTracker = () => {
             </div>
           </div>
         </div>
-        {currentUser.role === ROLES.ADMIN && (
+        {currentUser.role === ROLES.ADMIN ? (
           <div className="w-full p-4 border-b border-gray-200 bg-green-50">
             <div className="mb-4">
               <h2 className="text-lg sm:text-xl font-semibold mb-2">
@@ -599,16 +576,16 @@ const RouletteTracker = () => {
                     className={`p-2 rounded border ${streetAnalysis.streetsNotInLast12.some(
                       (s) => s.streetNumber === index + 1
                     )
-                      ? "bg-green-100 border-green-300"
-                      : streetAnalysis.streetsMultipleInLast12.some(
-                        (s) => s.streetNumber === index + 1
-                      )
-                        ? "bg-red-100 border-red-300"
-                        : streetAnalysis.streetsNotInLast10.some(
+                        ? "bg-green-100 border-green-300"
+                        : streetAnalysis.streetsMultipleInLast12.some(
                           (s) => s.streetNumber === index + 1
                         )
-                          ? "bg-yellow-100 border-yellow-300"
-                          : "bg-gray-100 border-gray-300"
+                          ? "bg-red-100 border-red-300"
+                          : streetAnalysis.streetsNotInLast10.some(
+                            (s) => s.streetNumber === index + 1
+                          )
+                            ? "bg-yellow-100 border-yellow-300"
+                            : "bg-gray-100 border-gray-300"
                       }`}
                   >
                     <div className="flex justify-between items-center">
@@ -646,10 +623,10 @@ const RouletteTracker = () => {
                       <div
                         key={index}
                         className={`w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full ${color === "red"
-                          ? "bg-red-600"
-                          : color === "black"
-                            ? "bg-black"
-                            : "bg-green-600"
+                            ? "bg-red-600"
+                            : color === "black"
+                              ? "bg-black"
+                              : "bg-green-600"
                           } text-white text-xs font-bold`}
                       >
                         {num}
@@ -657,6 +634,21 @@ const RouletteTracker = () => {
                     );
                   })}
               </div>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full p-4 border-b border-gray-200 bg-green-50">
+            <div className="mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                Street Information
+              </h2>
+              <p className="text-sm text-gray-600 mb-4">
+                Total Spins: <span className="font-bold">{totalSpins}</span> |
+                Last 5:{" "}
+                <span className="font-bold">
+                  {history.slice(-5).join(", ") || "None"}
+                </span>
+              </p>
             </div>
           </div>
         )}
@@ -667,41 +659,69 @@ const RouletteTracker = () => {
                 <h2 className="text-lg font-semibold mb-2">
                   Strategy Analysis (Admin View)
                 </h2>
-                <p className="text-sm mb-3">{getStreetSuggestion()}</p>
-                <h3 className="font-semibold text-sm mb-1">
-                  User Decision Summary:
-                </h3>
-                <div className="bg-white p-2 rounded border border-gray-200 mb-2">
-                  <p className="font-bold">{getSimplifiedDecision().decision}</p>
-                  <p className="text-xs text-gray-600">
-                    Confidence: {getSimplifiedDecision().confidence}
-                    <br />
-                    Reason: {getSimplifiedDecision().reason}
-                  </p>
-                </div>
-                <p className="text-xs text-gray-500 italic">
-                  This simplified decision is what regular users are seeing
-                </p>
+                {[1, 2, 3].map((strategy) => {
+                  const details = getStrategyDetails(strategy);
+                  return (
+                    <div
+                      key={strategy}
+                      className="mb-4 p-3 bg-white rounded border border-gray-200"
+                    >
+                      <h3 className="font-semibold text-sm mb-1">
+                        {details.name}
+                      </h3>
+                      <p className="text-sm mb-2">{details.description}</p>
+                      <p className="text-sm">
+                        <strong>Streets:</strong>{" "}
+                        {details.streets.length > 0
+                          ? details.streets.join(", ")
+                          : "None"}
+                      </p>
+                      <p className="text-sm">
+                        <strong>Numbers:</strong>{" "}
+                        {details.numbers.length > 0
+                          ? details.numbers.join(", ")
+                          : "None"}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Confidence: {details.confidence}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             ) : (
               <div className="bg-green-50 p-4 rounded border border-green-200">
                 <h2 className="text-lg font-semibold mb-2">
-                  Betting Recommendation
+                  Betting Strategies
                 </h2>
-                <div className="bg-white p-4 rounded shadow-inner">
-                  <p className="text-xl sm:text-2xl font-bold text-center mb-2">
-                    {getSimplifiedDecision().decision}
-                  </p>
-                  <div className="flex justify-between text-sm">
-                    <span>
-                      Confidence:{" "}
-                      <span className="font-semibold">
-                        {getSimplifiedDecision().confidence}
-                      </span>
-                    </span>
-                    <span>Based on {totalSpins} spins</span>
-                  </div>
-                </div>
+                {[1, 2, 3].map((strategy) => {
+                  const details = getStrategyDetails(strategy);
+                  return (
+                    <div
+                      key={strategy}
+                      className="mb-4 p-3 bg-white rounded border border-gray-200"
+                    >
+                      <h3 className="font-semibold text-sm mb-1">
+                        {details.name}
+                      </h3>
+                      <p className="text-sm">
+                        <strong>Streets to Play:</strong>{" "}
+                        {details.streets.length > 0
+                          ? details.streets.join(", ")
+                          : "None"}
+                      </p>
+                      <p className="text-sm">
+                        <strong>Numbers to Play:</strong>{" "}
+                        {details.numbers.length > 0
+                          ? details.numbers.join(", ")
+                          : "None"}
+                      </p>
+                      <p className="text-xs text-gray-600">
+                        Confidence: {details.confidence}
+                      </p>
+                    </div>
+                  );
+                })}
               </div>
             )}
             <div className="mt-4">
@@ -801,46 +821,6 @@ const RouletteTracker = () => {
               <>
                 <h3 className="font-semibold mb-2">Street Betting Guide</h3>
                 <div className="bg-white p-4 rounded border border-gray-200 mb-4">
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
-                    <div className="bg-green-100 p-2 rounded border border-green-200 text-center">
-                      <div className="text-xs font-medium">
-                        Best Streets to Bet
-                      </div>
-                      <div className="font-bold mt-1">
-                        {streetAnalysis.streetsNotInLast12.length > 0
-                          ? streetAnalysis.streetsNotInLast12
-                            .slice(0, 3)
-                            .map((s) => s.streetNumber)
-                            .join(", ")
-                          : "None"}
-                      </div>
-                    </div>
-                    <div className="bg-yellow-100 p-2 rounded border border-yellow-200 text-center">
-                      <div className="text-xs font-medium">
-                        Consider Betting
-                      </div>
-                      <div className="font-bold mt-1">
-                        {streetAnalysis.streetsNotInLast10.length > 0 &&
-                          streetAnalysis.streetsNotInLast12.length === 0
-                          ? streetAnalysis.streetsNotInLast10
-                            .slice(0, 3)
-                            .map((s) => s.streetNumber)
-                            .join(", ")
-                          : "None"}
-                      </div>
-                    </div>
-                    <div className="bg-red-100 p-2 rounded border border-red-200 text-center">
-                      <div className="text-xs font-medium">Avoid Betting</div>
-                      <div className="font-bold mt-1">
-                        {streetAnalysis.streetsMultipleInLast12.length > 0
-                          ? streetAnalysis.streetsMultipleInLast12
-                            .slice(0, 3)
-                            .map((s) => s.streetNumber)
-                            .join(", ")
-                          : "None"}
-                      </div>
-                    </div>
-                  </div>
                   <p className="text-xs text-gray-500">
                     <strong>Street bet:</strong> A bet on three consecutive
                     numbers in a horizontal line (e.g., 1-2-3 is Street 1).
