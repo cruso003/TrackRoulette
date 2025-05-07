@@ -297,7 +297,12 @@ const RouletteTracker = () => {
           </h1>
           <p className="text-sm">Please log in to continue</p>
         </div>
-        <div className="flex flex-grow items-center justify-center bg-white rounded-b-lg shadow-lg">
+        <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+        <h1 className="text-6xl md:text-8xl font-bold text-white text-center animate-pulse">
+          Coming Soon
+        </h1>
+      </div>
+        {/* <div className="flex flex-grow items-center justify-center bg-white rounded-b-lg shadow-lg">
           <form
             onSubmit={handleSubmit}
             className="bg-white p-6 sm:p-8 rounded shadow-md w-80"
@@ -345,7 +350,7 @@ const RouletteTracker = () => {
               <p>Users: username - user1/user2, password - user123/user456</p>
             </div>
           </form>
-        </div>
+        </div> */}
       </div>
     );
   };
